@@ -1,5 +1,5 @@
 # Use an official Node.js runtime as a parent image
-FROM node:14
+FROM node:20
 
 # Set the working directory in the container
 WORKDIR /app
@@ -25,3 +25,7 @@ EXPOSE 80
 
 # Start Nginx
 CMD ["nginx", "-g", "daemon off;"]
+
+
+# docker run -p 3000:3000 bilalouqda/masrouf-nodejs:0.0.0.RELEASE
+# docker build -t bilalouqda/masrouf-nodejs:0.0.0.RELEASE .

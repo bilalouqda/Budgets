@@ -6,6 +6,7 @@ import { CreateCategoryGroupDto } from './dto/create-category-group.dto';
 import { UpdateCategoryGroupDto } from './dto/update-category-group.dto';
 import { Category } from '../categories/entities/category.entity';
 import { Budget } from '../budgets/entities/budget.entity';
+import { group } from 'console';
 
 @Injectable()
 export class CategoryGroupsService {
@@ -32,6 +33,7 @@ export class CategoryGroupsService {
 
     const createdCategoryGroup = new this.categoryGroupModel(createCategoryGroupDto);
     const savedGroup = await createdCategoryGroup.save();
+console.log(createCategoryGroupDto.category);
 
     await this.updateCategoryTotals(createCategoryGroupDto.category);
 
@@ -40,6 +42,11 @@ export class CategoryGroupsService {
 
   async findAll(): Promise<CategoryGroup[]> {
     const groups = await this.categoryGroupModel.find().exec();
+    // // Update category totals for each unique category
+      const uniqueCategories = [...new Set(groups.map(group => group.category.toString()))];
+      for (const categoryId of uniqueCategories) {
+          await this.updateCategoryTotals(new Types.ObjectId(categoryId));
+      }
     return groups;
   }
 
@@ -52,7 +59,6 @@ export class CategoryGroupsService {
       .findByIdAndUpdate(id, updateCategoryGroupDto, { new: true })
       .populate('category')
       .exec();
-    console.log(updatedGroup);
     // Update category totals
     if (updatedGroup && updatedGroup.category) {
       await this.updateCategoryTotals(new Types.ObjectId(updatedGroup.category.toString()));
@@ -69,14 +75,19 @@ export class CategoryGroupsService {
     return group;
   }
 
-  private async updateCategoryTotals(categoryId: Types.ObjectId): Promise<void> {
-    const groups = await this.categoryGroupModel.find({ category: categoryId });
+  async updateCategoryTotals(categoryId: Types.ObjectId): Promise<void> {
+    const groups = await this.categoryGroupModel.find({ category: categoryId.toString() });
+    console.log(categoryId.toString());
+    console.log(groups);
     
-    const totals = groups.reduce((acc, group) => ({
-      totalAllocated: acc.totalAllocated + (group.allocated || 0),
-      totalSpent: acc.totalSpent + (group.spent || 0)
-    }), { totalAllocated: 0, totalSpent: 0 });
-
+    const totals = groups.reduce((acc, group) => {
+      acc.totalAllocated += group.allocated || 0;
+      acc.totalSpent += group.spent || 0;
+      return acc;
+    }, { totalAllocated: 0, totalSpent: 0 });
+      console.log(totals.totalAllocated);
+      console.log(totals.totalSpent);
+    
     await this.categoryModel.findByIdAndUpdate(categoryId, {
       totalAllocated: totals.totalAllocated,
       totalSpent: totals.totalSpent
@@ -96,8 +107,9 @@ export class CategoryGroupsService {
   async findByCategory(categoryId: string): Promise<CategoryGroup[]> {
     const res = await this.categoryGroupModel.find({ category: categoryId })
       .populate('category')
-      // .populate('transactions')
-      .exec();    
-    return res
+      .exec();
+    // Update category totals for the specified category
+    // await this.findAll();
+    return res;
   }
 }

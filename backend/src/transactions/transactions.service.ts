@@ -1,10 +1,11 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { Model, ObjectId, Types } from 'mongoose';
 import { Transaction, TransactionDocument } from './entities/transaction.entity';
 import { CreateTransactionDto } from './dto/create-transaction.dto';
 import { UpdateTransactionDto } from './dto/update-transaction.dto';
 import { CategoryGroup, CategoryGroupDocument } from '../categoryGroup/entity/categoryGroup.entity';
+import { CategoryGroupsService } from '../categoryGroup/categoryGroup.service';
 
 @Injectable()
 export class TransactionsService {
@@ -13,6 +14,7 @@ export class TransactionsService {
     private transactionModel: Model<TransactionDocument>,
     @InjectModel(CategoryGroup.name)
     private categoryGroupModel: Model<CategoryGroupDocument>,
+    private categoryGroupsService: CategoryGroupsService,
   ) {}
 
   async create(createTransactionDto: CreateTransactionDto): Promise<Transaction> {
@@ -27,7 +29,13 @@ export class TransactionsService {
         await categoryGroup.save();
     }
 
-    return createdTransaction.populate(['categoryGroup', 'budget']);
+    const res = await createdTransaction.populate(['categoryGroup', 'budget']);
+    const data = res.toObject();
+    console.log(data);
+    
+    console.log(data.categoryGroup.category.toString());
+    await this.categoryGroupsService.updateCategoryTotals(new Types.ObjectId(data.categoryGroup.category.toString()));
+    return data;
   }
 
   async findAll(): Promise<Transaction[]> {
