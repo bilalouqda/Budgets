@@ -18,7 +18,6 @@ export const authService = {
    * @param {RegisterData} data
    */
   async register(data) {
-    console.log("api",api);
     const response = await api.post('/users/register', data);
     console.log("response",response);
     return response.data;

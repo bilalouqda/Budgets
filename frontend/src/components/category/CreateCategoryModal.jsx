@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
 const CreateCategoryModal = ({ isOpen, onClose, budgetId }) => {
@@ -8,12 +8,18 @@ const CreateCategoryModal = ({ isOpen, onClose, budgetId }) => {
     isHidden: false
   });
 
+  useEffect(() => {
+    setCategoryData((prevData) => ({
+      ...prevData,
+      budget: budgetId
+    }));
+  }, [budgetId]);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      console.log(categoryData);
       const response = await axios.post('http://localhost:3000/categories', categoryData);
-      console.log(response.data);
+      console.log('Response Data:', response.data);
       onClose(response.data);
     } catch (error) {
       console.error('Error creating category:', error);

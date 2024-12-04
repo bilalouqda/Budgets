@@ -7,7 +7,6 @@ const CreateTransactionModal = ({ isOpen, onClose, categoryGroupId, budgetId }) 
     description: '',
     date: new Date().toISOString().split('T')[0],
     type: 'expense',
-    isReconciled: false,
     categoryGroup: categoryGroupId,
     budget: budgetId
   });
@@ -16,7 +15,10 @@ const CreateTransactionModal = ({ isOpen, onClose, categoryGroupId, budgetId }) 
     e.preventDefault();
     try {
       const response = await axios.post('http://localhost:3000/transactions', transactionData);
+      console.log(response.data);
       onClose(response.data);
+      // console.log(setExistingTransactions);
+      // setExistingTransactions(prevTransactions => [response.data, ...prevTransactions]);
     } catch (error) {
       console.error('Error creating transaction:', error);
     }
@@ -28,6 +30,7 @@ const CreateTransactionModal = ({ isOpen, onClose, categoryGroupId, budgetId }) 
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
       <div className="bg-white p-8 rounded-lg w-96">
         <h2 className="text-2xl font-bold mb-4">Create Transaction</h2>
+        
         <form onSubmit={handleSubmit}>
           <div className="mb-4">
             <label className="block mb-2">Amount</label>
@@ -70,17 +73,6 @@ const CreateTransactionModal = ({ isOpen, onClose, categoryGroupId, budgetId }) 
               <option value="expense">Expense</option>
               <option value="income">Income</option>
             </select>
-          </div>
-          <div className="mb-4">
-            <label className="flex items-center">
-              <input
-                type="checkbox"
-                checked={transactionData.isReconciled}
-                onChange={(e) => setTransactionData({...transactionData, isReconciled: e.target.checked})}
-                className="mr-2"
-              />
-              Reconciled
-            </label>
           </div>
           <div className="flex justify-end gap-2">
             <button

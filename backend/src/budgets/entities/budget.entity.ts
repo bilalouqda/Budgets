@@ -18,7 +18,7 @@ export class Budget {
   targetAmount: number;
 
   @Prop({ type: Types.ObjectId, ref: 'User', required: true })
-  owner: User | Types.ObjectId;
+  owner: User;
 }
 
 export const BudgetSchema = SchemaFactory.createForClass(Budget);

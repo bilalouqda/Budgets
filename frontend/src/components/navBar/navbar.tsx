@@ -9,7 +9,6 @@ interface NavigationItem {
     onClick: () => void;
 }
 
-
 // Variants for the navigation bar animation
 const navVariants = {
     open: {
@@ -63,6 +62,7 @@ export default function NavigationBar() {
               ]
         ),
     ];
+
     // Update resize state based on scroll position
     useMotionValueEvent(scrollY, "change", (latest: number) => {
         setIsResized(latest > 250);
@@ -77,7 +77,6 @@ export default function NavigationBar() {
                     variants={navVariants}
                     className={cn('w-full bg-black dark:bg-#a5b4fc ', isResized && "md:rounded-full rounded-3xl", isMenuOpen && "w-full")}
                 >
-                    {/* dark:shadow-inner dark:shadow-white/40 border shadow-lg py-2 */}
                     <div className='w-full px-4 md:px-8 flex justify-between items-center gap-10 sm:gap-20'>
                         <div className='flex gap-2 items-center' onClick={() => navigate('/')}> 
                             <img src="public/logo.png" className="w-14 h-14" alt="Logo" />
@@ -95,6 +94,8 @@ export default function NavigationBar() {
                                 </button>
                             ))}
                         </div>
+                        {/* Hamburger Menu Toggle */}
+                        <MenuToggle isMenuOpen={isMenuOpen} setMenuOpen={setIsMenuOpen} />
                     </div>
                     {isMenuOpen && (
                         <div className="flex my-16 bg-black/10 dark:bg-white/10 rounded-xl mx-4 flex-col px-5 py-7 gap-5 text-lg font-medium">
@@ -106,7 +107,7 @@ export default function NavigationBar() {
                                     animate={{ opacity: 1, y: 0 }}
                                     transition={{ ease: 'easeInOut', duration: 0.3, delay: index * 0.2, stiffness: 50, type: 'spring' }}
                                     className='py-2 rounded-xl border border-black/20 px-4 flex items-center dark:border-black/15 hover:-translate-y-2 ease-in-out duration-150 hover:bg-black hover:text-black shadow dark:hover:bg-white dark:hover:text-black bg-black dark:bg-black'
-                                    style={{ cursor: 'pointer', background: 'none',backgroudColor:'red', border: 'none' }}
+                                    style={{ cursor: 'pointer', background: 'none', border: 'none' }}
                                 >
                                     {item.name}
                                 </motion.button>
@@ -115,15 +116,6 @@ export default function NavigationBar() {
                     )}
                 </motion.div>
             </nav>
-            {/* Main content area */}
-            {/* <div>
-                <div className='font-semibold flex justify-center items-center'>
-                    <WelcomeMessage/>
-                </div>
-                <div className='font-semibold flex justify-center items-center'>
-                    <Home/>
-                </div>
-            </div> */}
         </>
     );
 }

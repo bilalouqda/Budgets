@@ -4,7 +4,7 @@ import { jwtDecode } from "jwt-decode";
 import LoginPage from './components/authentifaction/login';
 import AuthPage from './components/authentifaction/register';
 import About from './components/About/about';
-import BudgetPage from './components/budgetExemple';
+import BudgetPage from './components/Homebudget';
 import Home from './components/HomePage/home';
 import AdminDashboard from './components/dashbord/AdminDashbord';
 

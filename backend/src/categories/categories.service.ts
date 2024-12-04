@@ -5,6 +5,11 @@ import { Category } from './entities/category.entity';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
 
+// Define the Budget interface if not already defined
+interface Budget {
+  _id: string;
+}
+
 @Injectable()
 export class CategoriesService {
   constructor(
@@ -66,10 +71,24 @@ export class CategoriesService {
     return deletedCategory;
   }
 
-  async findByBudget(budgetId: string): Promise<Category[]> {
-    return this.categoryModel.find({ budget: budgetId })
+  async findByBudget(budgetId: string): Promise<Category[]> {   
+    if (!budgetId) {
+      throw new Error('Invalid budget ID');
+    }
+    const res = await this.categoryModel.find()
       .populate('budget')
       .populate('categoryGroups')
+      .lean()
       .exec();
+    
+    const categories = res.filter(category => (category.budget as unknown as Budget)._id.toString() === budgetId);
+
+    console.log(`Found ${categories.length} categories for budget ID: ${budgetId}`);
+
+    if (categories.length === 0) {
+      console.warn(`No categories found for budget ID: ${budgetId}`);
+    }
+
+    return categories;
   }
 }

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 
 interface CategoryGroupData {
@@ -28,10 +28,20 @@ const CreateCategoryGroupModal: React.FC<Props> = ({ isOpen, onClose, categoryId
     order: 0,
     isHidden: false
   });
+  useEffect(() => {
+    setGroupData((prevData) => ({
+      ...prevData,
+      category: categoryId,
+      budget: budgetId
+    }));
+  }, [categoryId]);
+
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+    e.preventDefault();    
     try {
       const response = await axios.post<CategoryGroupData>('http://localhost:3000/category-groups', groupData);
+      console.log(response.data);
+
       onClose(response.data);
     } catch (error) {
       console.error('Error creating category group:', error);

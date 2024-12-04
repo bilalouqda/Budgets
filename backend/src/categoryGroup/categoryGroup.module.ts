@@ -4,12 +4,14 @@ import { CategoryGroup, CategoryGroupSchema } from './entity/categoryGroup.entit
 import { Category, CategorySchema } from '../categories/entities/category.entity';
 import { CategoryGroupsController } from './categoryGroup.controller';
 import { CategoryGroupsService } from './categoryGroup.service';
+import { Budget, BudgetSchema } from 'src/budgets/entities/budget.entity';
 
 @Module({
   imports: [
     MongooseModule.forFeature([
       { name: CategoryGroup.name, schema: CategoryGroupSchema },
       { name: Category.name, schema: CategorySchema },
+      { name: Budget.name, schema: BudgetSchema },
     ]),
   ],
   controllers: [CategoryGroupsController],

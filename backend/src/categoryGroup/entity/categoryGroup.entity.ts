@@ -7,11 +7,13 @@ export type CategoryGroupDocument = CategoryGroup & Document;
 
 @Schema()
 export class CategoryGroup {
+  _id: string;
+
   @Prop({ required: true })
   name: string;
 
   @Prop({ type: Types.ObjectId, ref: 'Budget', required: true })
-  budget: Types.ObjectId;
+  budget: Budget;
 
   @Prop({ type: Types.ObjectId, ref: 'Category', required: true })
   category: Category;

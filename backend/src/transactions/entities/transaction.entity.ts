@@ -1,6 +1,7 @@
 import { CategoryGroup } from './../../categoryGroup/entity/categoryGroup.entity';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document, Types } from 'mongoose';
+import { Budget } from 'src/budgets/entities/budget.entity';
 
 export type TransactionDocument = Transaction & Document;
 
@@ -18,14 +19,16 @@ export class Transaction {
   @Prop({ required: true })
   type: string;
 
-  @Prop({ default: false })
-  isReconciled: boolean;
-
   @Prop({ type: Types.ObjectId, ref: 'CategoryGroup', required: true })
   categoryGroup: CategoryGroup;
-
+  
   @Prop({ type: Types.ObjectId, ref: 'Budget', required: true })
-  budget: Types.ObjectId;
+  budget: Budget;
+
 }
 
 export const TransactionSchema = SchemaFactory.createForClass(Transaction);
+
+
+// @Prop({ default: false })
+// isReconciled: boolean;

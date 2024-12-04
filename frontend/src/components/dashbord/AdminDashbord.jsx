@@ -58,7 +58,6 @@ const AdminDashboard = () => {
     <div className="min-h-screen w-screen flex flex-col max-w-7xl mx-auto">
       {/* <NavigationBar /> */}
       <div className="flex flex-1 h-[calc(100vh-64px)]">
-        {/* Sidebar */}
         <div className="hidden md:flex w-64 bg-gray-800 text-white">
           <div className="w-full">
             <div className="p-6">
@@ -115,7 +114,6 @@ const AdminDashboard = () => {
           </div>
         </div>
 
-        {/* Main Content */}
         <div className="flex-1 bg-gray-100 overflow-auto">
           <div className="p-6">
             {error && (
@@ -242,7 +240,6 @@ const AdminDashboard = () => {
         </div>
       </div>
 
-      {/* Mobile Sidebar Button - Fixed position */}
       <div className="md:hidden fixed bottom-6 right-6 z-50">
         <button
           onClick={toggleUsersList}

@@ -11,7 +11,6 @@ export enum UserRole {
 
 @Schema({ toJSON: { virtuals: true }, toObject: { virtuals: true } })
 export class User {
-    // Basic property
   @Prop({ required: true, unique: true })
   username: string;
 

@@ -10,7 +10,7 @@ import {
   HttpCode,
 } from '@nestjs/common';
 import { TransactionsService } from './transactions.service';
-import { CreateTransactionDto } from './dto/create-transaction.dto/create-transaction.dto';
+import { CreateTransactionDto } from './dto/create-transaction.dto';
 import { UpdateTransactionDto } from './dto/update-transaction.dto';
 
 @Controller('transactions')
@@ -49,8 +49,8 @@ export class TransactionsController {
     return this.transactionsService.findByBudget(budgetId);
   }
 
-  @Get('category/:categoryId')
-  findByCategory(@Param('categoryId') categoryId: string) {
-    return this.transactionsService.findByCategory(categoryId);
+  @Get('category-group/:categoryGroupId')
+  findByCategoryGroup(@Param('categoryGroupId') categoryGroupId: string) {
+    return this.transactionsService.findByCategoryGroup(categoryGroupId);
   }
 }

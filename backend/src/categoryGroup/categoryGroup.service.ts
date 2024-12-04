@@ -1,10 +1,11 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import { CategoryGroup, CategoryGroupDocument } from './entity/categoryGroup.entity';
 import { CreateCategoryGroupDto } from './dto/create-category-group.dto';
 import { UpdateCategoryGroupDto } from './dto/update-category-group.dto';
 import { Category } from '../categories/entities/category.entity';
+import { Budget } from '../budgets/entities/budget.entity';
 
 @Injectable()
 export class CategoryGroupsService {
@@ -13,20 +14,33 @@ export class CategoryGroupsService {
     private categoryGroupModel: Model<CategoryGroupDocument>,
     @InjectModel(Category.name)
     private categoryModel: Model<Category>,
+    @InjectModel(Budget.name)
+    private budgetModel: Model<Budget>,
   ) {}
 
   async create(createCategoryGroupDto: CreateCategoryGroupDto): Promise<CategoryGroup> {
+    // Ensure the category and budget exist
+    const category = await this.categoryModel.findById(createCategoryGroupDto.category);
+    if (!category) {
+        throw new NotFoundException(`Category with ID ${createCategoryGroupDto.category} not found`);
+    }
+
+    const budget = await this.budgetModel.findById(createCategoryGroupDto.budget);
+    if (!budget) {
+        throw new NotFoundException(`Budget with ID ${createCategoryGroupDto.budget} not found`);
+    }
+
     const createdCategoryGroup = new this.categoryGroupModel(createCategoryGroupDto);
     const savedGroup = await createdCategoryGroup.save();
 
-    // Update category totals
     await this.updateCategoryTotals(createCategoryGroupDto.category);
 
     return savedGroup;
   }
 
   async findAll(): Promise<CategoryGroup[]> {
-    return this.categoryGroupModel.find().exec();
+    const groups = await this.categoryGroupModel.find().exec();
+    return groups;
   }
 
   async findOne(id: string): Promise<CategoryGroup> {
@@ -48,7 +62,11 @@ export class CategoryGroupsService {
   }
 
   async remove(id: string): Promise<CategoryGroup> {
-    return this.categoryGroupModel.findByIdAndDelete(id).exec();
+    const group = await this.categoryGroupModel.findByIdAndDelete(id).exec();
+    if (group && group.category) {
+      await this.updateCategoryTotals(new Types.ObjectId(group.category.toString()));
+    }
+    return group;
   }
 
   private async updateCategoryTotals(categoryId: Types.ObjectId): Promise<void> {
@@ -65,10 +83,21 @@ export class CategoryGroupsService {
     });
   }
 
+  // async findByCategory(categoryId: string): Promise<CategoryGroup[]> {
+  //   console.log(categoryId);
+
+  //   return this.categoryGroupModel
+  //     .find({ category: new Types.ObjectId(categoryId) })
+  //     .populate('transactions')
+
+  //     .exec();
+  // }
+
   async findByCategory(categoryId: string): Promise<CategoryGroup[]> {
-    return this.categoryGroupModel
-      .find({ category: new Types.ObjectId(categoryId) })
-      .populate('transactions')
-      .exec();
+    const res = await this.categoryGroupModel.find({ category: categoryId })
+      .populate('category')
+      // .populate('transactions')
+      .exec();    
+    return res
   }
 }
